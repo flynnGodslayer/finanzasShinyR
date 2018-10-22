@@ -11,11 +11,22 @@ ui <- dashboardPage( skin = 'red',
                                  icon = icon("exclamation-triangle"),
                                  status = "warning"
                                )           
-                    )
+                    ),
+                  tags$li(class = "dropdown",
+                          tags$li(class = "dropdown", textOutput("logged_user"), style = "padding-top: 15px; padding-bottom: 15px; color: #fff;"),
+                          tags$li(class = "dropdown", actionLink("login", textOutput("logintext")))
+                  ),
+                  tags$li(actionLink("openModal", label = "", icon = icon("info")),
+                          class = "dropdown")
                   ),
   dashboardSidebar(
     sidebarMenu(
-      menuItem("Datos del Usuario", tabName = "dashboard", icon = icon("dashboard")),
+      menuItem("Datos del Usuario", icon = icon("dashboard"),
+                  menuSubItem("Ingreso Automático",tabName = "dashboard",
+                              icon = icon("dashboard")),
+                  menuSubItem("Ingreso Manual",tabName = "Inputsidebars",
+                              icon = icon("cog", lib = "glyphicon"))
+               ),
       menuItem("Visualización", tabName = "graph", icon = icon("bar-chart"))
     )
   ),
@@ -28,9 +39,15 @@ ui <- dashboardPage( skin = 'red',
                   title = "Tabla de Ingresos",
                   # The id lets us use input$tabset1 on the server to find the current tab
                   id = "tabset1", height = "500px",
-                  tabPanel( "Ingresos automáticos"),
-                  tabPanel( "Ingresos manuales")
+                  tabPanel( "Ingresos automáticos")
+                  #tabPanel( "Ingresos manuales")
                 )
+              )
+      ),
+      tabItem(tabName = "Inputsidebars",
+              h2("Ingresos Manuales"),
+              fluidRow(
+                
               )
       ),
       tabItem(tabName = "graph",
@@ -60,6 +77,32 @@ server <- function(input, output) {
   output$plot2 <- renderPlot({
     der <- read.csv('baseshiny.csv')
     ggplot(data = der, aes(x = der$Date, y = der$Money)) + geom_area(stat = 'identity')
+  })
+  observeEvent(input$openModal, {
+    showModal(
+      modalDialog(title = "Some title",
+                  p("Some information"))
+    )
+  })
+  
+  
+  logged_in <- reactiveVal(FALSE)
+  
+  # switch value of logged_in variable to TRUE after login succeeded
+  observeEvent(input$login, {
+    logged_in(ifelse(logged_in(), FALSE, TRUE))
+  })
+  
+  # show "Login" or "Logout" depending on whether logged out or in
+  output$logintext <- renderText({
+    if(logged_in()) return("Logout here.")
+    return("Login here")
+  })
+  
+  # show text of logged in user
+  output$logged_user <- renderText({
+    if(logged_in()) return("User 1 is logged in.")
+    return("")
   })
 }
 
