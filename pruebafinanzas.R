@@ -39,15 +39,20 @@ ui <- dashboardPage( skin = 'red',
                   title = "Tabla de Ingresos",
                   # The id lets us use input$tabset1 on the server to find the current tab
                   id = "tabset1", height = "500px",
-                  tabPanel( "Ingresos automáticos")
+                  textOutput("NTR"),
+                  tabPanel( "Ingresos automáticos"),
                   #tabPanel( "Ingresos manuales")
+                  actionButton("click","Subir archivo")
                 )
-              )
+              ) 
       ),
       tabItem(tabName = "Inputsidebars",
               h2("Ingresos Manuales"),
               fluidRow(
-                
+                selectInput(inputId = "name",#Funcion selectInput(Es una funcion reactive); Filtro 
+                            label = "Categorias",
+                            choices = mtcars$cyl),
+                actionButton("click","Presupuesto")
               )
       ),
       tabItem(tabName = "graph",
@@ -75,8 +80,8 @@ server <- function(input, output) {
     hist(data)
   })
   output$plot2 <- renderPlot({
-    der <- read.csv('baseshiny.csv')
-    ggplot(data = der, aes(x = der$Date, y = der$Money)) + geom_area(stat = 'identity')
+    der <- read.csv('TDCR.csv',skip = 1)
+    ggplot(data = der, aes(x = Fecha, y = Débito)) + geom_point(stat = 'identity')
   })
   observeEvent(input$openModal, {
     showModal(
@@ -104,6 +109,12 @@ server <- function(input, output) {
     if(logged_in()) return("User 1 is logged in.")
     return("")
   })
+  
+  output$NTR <- renderText({
+    input$NTR
+    read.csv('TDCR.csv', skip = 1)
+  })
+ 
 }
 
 shinyApp(ui, server)
