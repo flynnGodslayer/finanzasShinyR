@@ -13,7 +13,8 @@ ui <- dashboardPage( skin = 'red',
                                )           
                     ),
                   tags$li(class = "dropdown",
-                          tags$li(class = "dropdown", textOutput("logged_user"), style = "padding-top: 15px; padding-bottom: 15px; color: #fff;"),
+                          tags$li(class = "dropdown", textOutput("logged_user"), 
+                                  style = "padding-top: 15px; padding-bottom: 15px; color: #fff;"),
                           tags$li(class = "dropdown", actionLink("login", textOutput("logintext")))
                   ),
                   tags$li(actionLink("openModal", label = "", icon = icon("info")),
@@ -36,13 +37,17 @@ ui <- dashboardPage( skin = 'red',
               h1("Clasificación de los Ingresos"),
               fluidRow(
                 tabBox(
-                  title = "Tabla de Ingresos",
                   # The id lets us use input$tabset1 on the server to find the current tab
-                  id = "tabset1", height = "500px",
-                  textOutput("NTR"),
+                  width = "auto",
+                  id = "tabset1", height = "auto",
                   tabPanel( "Ingresos automáticos"),
-                  #tabPanel( "Ingresos manuales")
-                  actionButton("click","Subir archivo")
+                  fileInput("file","Subir Archivo"),
+                  checkboxGroupInput("cot","Categorias",
+                                     choices = c("Comida","Entretenimiento","Oficina","Infraestructura",
+                                                 "Transporte","Telefono","Salud","Electronica",
+                                                 "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta")),
+                  checkboxInput("header","Header"),
+                  tabPanel("Tabla de Ingresos",tableOutput("input_file"))
                 )
               ) 
       ),
@@ -51,7 +56,9 @@ ui <- dashboardPage( skin = 'red',
               fluidRow(
                 selectInput(inputId = "name",#Funcion selectInput(Es una funcion reactive); Filtro 
                             label = "Categorias",
-                            choices = mtcars$cyl),
+                            choices = c("Comida","Entretenimiento","Oficina","Infraestructura",
+                                        "Transporte","Telefono","Salud","Electronica",
+                                        "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta")),
                 actionButton("click","Presupuesto")
               )
       ),
@@ -85,8 +92,8 @@ server <- function(input, output) {
   })
   observeEvent(input$openModal, {
     showModal(
-      modalDialog(title = "Some title",
-                  p("Some information"))
+      modalDialog(title = "Instituto de Fisica",
+                  p("Esta aplicación fue realizada para el manejo de finanzas personales"))
     )
   })
   
@@ -109,12 +116,15 @@ server <- function(input, output) {
     if(logged_in()) return("User 1 is logged in.")
     return("")
   })
-  
-  output$NTR <- renderText({
-    input$NTR
-    read.csv('TDCR.csv', skip = 1)
-  })
- 
+  #upload files of our device
+  output$input_file <- renderTable({
+     file_to_read = input$file
+     if(is.null(file_to_read)){
+       return()
+     }
+     read.table(file_to_read$datapath, sep = input$sep, header = input$header)
+   })
+   #output$cat <- 
 }
 
 shinyApp(ui, server)
