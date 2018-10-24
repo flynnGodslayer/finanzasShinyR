@@ -122,7 +122,7 @@ server <- function(input, output) {
      if(is.null(file_to_read)){
        return()
      }
-     read.table(file_to_read$datapath, sep = input$sep, header = input$header)
+     read.csv(file_to_read$datapath, header = TRUE, skip = 1)
    })
    #output$cat <- 
 }
