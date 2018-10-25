@@ -1,6 +1,7 @@
 library(shinydashboard)
 library(shiny)
 library(ggplot2)
+library(dplyr)
 
 
 ui <- dashboardPage( skin = 'red',
@@ -41,13 +42,14 @@ ui <- dashboardPage( skin = 'red',
                   width = "auto",
                   id = "tabset1", height = "auto",
                   tabPanel( "Ingresos automáticos"),
+                  sidebarPanel(
                   fileInput("file","Subir Archivo"),
                   checkboxGroupInput("cot","Categorias",
                                      choices = c("Comida","Entretenimiento","Oficina","Infraestructura",
                                                  "Transporte","Telefono","Salud","Electronica",
-                                                 "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta")),
-                  checkboxInput("header","Header"),
-                  tabPanel("Tabla de Ingresos",tableOutput("input_file"))
+                                                 "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta"))
+                  ),
+                  mainPanel("Tabla de Ingresos",tableOutput("input_file"))
                 )
               ) 
       ),
@@ -122,7 +124,7 @@ server <- function(input, output) {
      if(is.null(file_to_read)){
        return()
      }
-     read.csv(file_to_read$datapath, header = TRUE, skip = 1)
+     read.csv(file_to_read$datapath, header = TRUE, skip = 1, colClasses = c(NA, NA, NA, NA, "NULL", NA))
    })
    #output$cat <- 
 }
