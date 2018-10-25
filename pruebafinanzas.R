@@ -57,16 +57,17 @@ ui <- dashboardPage( skin = 'red',
               h2("Ingresos Manuales"),
               fluidRow(
                 sidebarPanel(
+                  fila <- 1, #inicializa variable para darle un id a cada ingreso del usuario
                   selectInput(inputId = "name",#Funcion selectInput(Es una funcion reactive); Filtro 
                               label = "Categorias",
                               choices = c("Comida","Entretenimiento","Oficina","Infraestructura",
                                           "Transporte","Telefono","Salud","Electronica",
                                           "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta")),
-                  textInput("text",h4("Gasto"),value = "Enter text..."),
-                  numericInput("moneda",h4("Importe"),value = NULL),
+                  textInput("ingresoFila",label = "Descripción", placeholder = "Describe tu gasto"), 
+                  numericInput(inputId = fila + 1, label = "moneda", value = "NULL", min = .01),
                   actionButton("click","Adjuntar")
                 ),
-                mainPanel(h3("Tabla de Ingresos"),tableOutput("input_file"))
+                mainPanel(h3("Tabla de Ingresos"))#poner el table output de acuerdo a una nueva variable para hacer el display 
             )
       ),
       tabItem(tabName = "graph",
@@ -123,7 +124,7 @@ server <- function(input, output) {
     if(logged_in()) return("User 1 is logged in.")
     return("")
   })
-  #upload files of our device
+  #Lee el csv y lo mete en la variable input_file
   output$input_file <- renderTable({
      file_to_read = input$file
      if(is.null(file_to_read)){
