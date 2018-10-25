@@ -49,20 +49,25 @@ ui <- dashboardPage( skin = 'red',
                                                  "Transporte","Telefono","Salud","Electronica",
                                                  "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta"))
                   ),
-                  mainPanel("Tabla de Ingresos",tableOutput("input_file"))
+                  mainPanel(h3("Tabla de Ingresos"),tableOutput("input_file"))
                 )
               ) 
       ),
       tabItem(tabName = "Inputsidebars",
               h2("Ingresos Manuales"),
               fluidRow(
-                selectInput(inputId = "name",#Funcion selectInput(Es una funcion reactive); Filtro 
-                            label = "Categorias",
-                            choices = c("Comida","Entretenimiento","Oficina","Infraestructura",
-                                        "Transporte","Telefono","Salud","Electronica",
-                                        "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta")),
-                actionButton("click","Presupuesto")
-              )
+                sidebarPanel(
+                  selectInput(inputId = "name",#Funcion selectInput(Es una funcion reactive); Filtro 
+                              label = "Categorias",
+                              choices = c("Comida","Entretenimiento","Oficina","Infraestructura",
+                                          "Transporte","Telefono","Salud","Electronica",
+                                          "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta")),
+                  textInput("text",h4("Gasto"),value = "Enter text..."),
+                  numericInput("moneda",h4("Importe"),value = NULL),
+                  actionButton("click","Adjuntar")
+                ),
+                mainPanel(h3("Tabla de Ingresos"),tableOutput("input_file"))
+            )
       ),
       tabItem(tabName = "graph",
               h2("Análisis de los Ingresos"),
