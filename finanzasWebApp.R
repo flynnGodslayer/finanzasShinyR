@@ -43,10 +43,10 @@ ui <- dashboardPage( skin = 'red',
                   id = "tabset1", height = "auto",
                   tabPanel( "Ingresos automáticos"),
                   sidebarPanel(
-                  fileInput("file","Subir Archivo"),
+                  fileInput("file","Subir Archivo",width = "1000px"),
                   checkboxGroupInput("cot","Categorias",
-                                     choices = c("Comida","Entretenimiento","Oficina","Infraestructura",
-                                                 "Transporte","Telefono","Salud","Electronica",
+                                     choices = c(Comida = 'Rest',Entretenimiento = 'MINISO',"Oficina","Infraestructura",
+                                                 Transporte = 'Gasol',"Telefono","Salud","Electronica",
                                                  "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta"))
                   ),
                   mainPanel(h3("Tabla de Ingresos"),tableOutput("input_file"))
@@ -73,15 +73,11 @@ ui <- dashboardPage( skin = 'red',
       tabItem(tabName = "graph",
               h2("Análisis de los Ingresos"),
         fluidRow(
-          box(plotOutput("plot1", height = 250)),
-      
-          box(
-            title = "Controls",
-            sliderInput("slider", "Number of observations:", 1, 100, 50)
-          ),
-          box(plotOutput("plot2", height = 250))
+          box(plotOutput("plot1", height = 250,width = 250)),
+          box(plotOutput("plot2", height = 250, width = 1000))
         )
       )
+      
     )
   )
 )
@@ -91,12 +87,17 @@ server <- function(input, output) {
   histdata <- rnorm(500)
   
   output$plot1 <- renderPlot({
-    data <- histdata[seq_len(input$slider)]
-    hist(data)
+    der <- read.csv('TDCR.csv',skip = 1)
+   der <- ggplot(data =der) + geom_bar(mapping = aes(x =Fecha , fill =Descripción),
+      show.legend = FALSE,width = 1) + theme(aspect.ratio = 1) + labs(x = NULL, y = NULL)
+   der + coord_flip()  
+    
   })
+
   output$plot2 <- renderPlot({
     der <- read.csv('TDCR.csv',skip = 1)
-    ggplot(data = der, aes(x = Fecha, y = Débito)) + geom_point(stat = 'identity')
+    ggplot(data = der) + geom_bar(mapping = aes(x = Débito, fill = Descripción),
+        position = "dodge")
   })
   observeEvent(input$openModal, {
     showModal(
