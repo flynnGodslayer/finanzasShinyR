@@ -2,7 +2,7 @@ library(shinydashboard)
 library(shiny)
 library(ggplot2)
 library(dplyr)
-
+library(formattable)
 
 ui <- dashboardPage( skin = 'red',
   dashboardHeader(title = "Manejo de Finanzas",
@@ -49,7 +49,7 @@ ui <- dashboardPage( skin = 'red',
                                                  Transporte = 'Gasol',"Telefono","Salud","Electronica",
                                                  "Cuidado Personal","Mascotas","Viajes","Estados de Cuenta"))
                   ),
-                  mainPanel(h3("Tabla de Ingresos"),tableOutput("input_file"))
+                  mainPanel(h3("Tabla de Ingresos"),formattableOutput("input_file"))
                 )
               ) 
       ),
@@ -126,14 +126,15 @@ server <- function(input, output) {
     return("")
   })
   #Lee el csv y lo mete en la variable input_file
-  output$input_file <- renderTable({
+  output$input_file <- renderFormattable({
      file_to_read = input$file
      if(is.null(file_to_read)){
        return()
      }
-     read.csv(file_to_read$datapath, header = TRUE, skip = 1, colClasses = c(NA, NA, NA, NA, "NULL", NA))
+     x <- read.csv(file_to_read$datapath, header = TRUE, skip = 1,
+              colClasses = c(NA, NA, NA, NA, "NULL", "NULL"))
+     formattable(x)
    })
-   #output$cat <- 
 }
 
 shinyApp(ui, server)
