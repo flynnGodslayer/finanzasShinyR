@@ -128,13 +128,30 @@ server <- function(input, output) {
   #Lee el csv y lo mete en la variable input_file
   output$input_file <- renderFormattable({
      file_to_read = input$file
+     #file_to_read$Crédito[!is.na(file_to_read$Débito)] <- -file_to_read$Débito[!is.na(file_to_read$Crédito)]
+     #file_to_read$Crédito <- sprintf('-%', file_to_read$Crédito)
      if(is.null(file_to_read)){
        return()
      }
+<<<<<<< HEAD
      x <- read.csv(file_to_read$datapath, header = TRUE, skip = 1,
               colClasses = c(NA, NA, NA, NA, "NULL", "NULL"))
      formattable(x)
    })
+=======
+     file_to_read <- read.csv(file_to_read$datapath, header = TRUE, skip = 1, colClasses = c(NA, NA, NA, NA, "NULL", "NULL"))
+     
+     file_to_read$Crédito[!is.na(file_to_read$Débito)] <- -file_to_read$Crédito[!is.na(file_to_read$Crédito)] 
+     #file_to_read$Saldo <- paste(file_to_read$Débito, file_to_read$Crédito)
+     #file_to_read$col4 <- "prueba"
+     #file_to_read$Crédito <- sprintf('-%i', file_to_read$Crédito)
+     #file_to_read$Débito[is.na(file_to_read$Débito)] <- sub("^", "-", !is.na(file_to_read$Crédito) )
+     #file_to_read$Crédito[!is.na(file_to_read$Débito)] <- -file_to_read$Débito[!is.na(file_to_read$Crédito)]
+   })
+  
+  #file_to_read$Saldo <- paste(file_to_read$Débito, file_to_read$Credito)
+   #output$cat <- 
+>>>>>>> refs/remotes/origin/master
 }
 
 shinyApp(ui, server)
