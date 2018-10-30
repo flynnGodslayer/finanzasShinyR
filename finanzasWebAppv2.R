@@ -1,6 +1,8 @@
 library(shiny)
 library(shinydashboard)
 library(DT)
+library(tidyverse)
+library(dplyr)
 
 ui <- dashboardPage(
         dashboardHeader(),
@@ -13,16 +15,15 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output) { 
-    #output$csv <- renderTable({
-     # csv <- input$file
-    #  if(is.null(csv)){return()} 
-    #  read.csv(csv$datapath,header = TRUE,skip = 1,colClasses = c(NA,NA,NA,NA,'NULL','NULL'))
-    #})
-    #archivo <- read.csv("TDCR.csv",header = TRUE,skip = 1,colClasses = c(NA,NA,NA,NA,'NULL','NULL'))
+
     output$file <- renderDT({
       req(input$file)
-      read.csv(input$file$datapath,header = TRUE,skip = 1,colClasses = c(NA,NA,NA,NA,'NULL','NULL'))
-      #archivo,  options = list(lengthChange = FALSE)
+      archivo <-read.csv(input$file$datapath,header = TRUE,skip = 1,
+                                    colClasses = c(NA,NA,NA,-NA,'NULL','NULL'))
+      transform(archivo,Crédito,Crédito = Crédito * -1) 
+      archivo <- unite(archivo,Débito,c(Débito,Crédito),sep = "",remove = TRUE)
+      datatable(archivo,selection = "none",editable = TRUE)
+      
     })
   }
 
