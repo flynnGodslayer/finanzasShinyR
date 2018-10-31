@@ -3,7 +3,7 @@ library(shinydashboard)
 library(DT)
 library(tidyverse)
 library(dplyr)
-setwd("/home/curso/finanzasShinyR")
+#setwd("/home/curso/finanzasShinyR")
 
 ui <- dashboardPage(
         dashboardHeader(),
@@ -33,13 +33,12 @@ server <- function(input, output) {
       archivo$credito <- as.numeric(gsub(",", "", archivo$credito))
       archivo$debito[!is.na(archivo$credito)] <- -archivo$credito[!is.na(archivo$credito)]
       archivo <- select(archivo, -credito, -saldo, -moneda)
-      archivo
       datatable(archivo, selection = "none", editable = TRUE, options = list(scrollY = '300px', scrollX = TRUE, paging = FALSE, searching = FALSE))
     })
     
     observeEvent(
       input$escribir, {
-        write.csv(archivo, file = "memoria.csv")
+        write.csv2(archivo, file = "memoria.csv")
       }
     ) 
   }
