@@ -37,7 +37,7 @@ server <- function(input, output) {
     #categoria <- factor(LETTERS[41:1],levels =LETTERS[41:1])
     archivo <- data.frame(archivo, categoria)
     ar <- select(archivo, -credito, -saldo, -moneda)
-    rhandsontable(ar, width = 600, height = 300, selectCallback = TRUE)%>%
+    rhandsontable(ar, width = 700, stretchH = "all",height = 300, selectCallback = TRUE)%>%
       hot_col(col = "categoria", type = 'dropdown', source = c("Comida", "Entretenimiento", 
                                                                "Oficina", "Infraestructura", 
                                                                "Transporte", "Compras", "Ropa", 
@@ -47,7 +47,9 @@ server <- function(input, output) {
                                                                "Impuestos", "Automóvil", 
                                                                "Estados de cuenta" ))%>%
       hot_col(col = "fecha", type = 'date', source = Sys.Date())%>%
-      hot_context_menu(allowRowEdit = TRUE, allowColEdit = TRUE)
+      hot_context_menu(allowRowEdit = TRUE, allowColEdit = TRUE)%>%
+      hot_cols(colWidths = 160) %>%
+      hot_cols(fixedColumnsLeft = 1) 
     #datatable(ar, selection =list(target = "cell"), editable = TRUE,
     #options = list(scrollY = '400px', scrollX = TRUE, paging = FALSE, 
     #searching = TRUE))
