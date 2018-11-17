@@ -6,6 +6,7 @@ library(dplyr)
 library(DBI)
 library(RSQLite)
 library(rhandsontable)
+library(sweetalertR)
 
 
 ui <- dashboardPage(
@@ -14,7 +15,12 @@ ui <- dashboardPage(
   dashboardBody(
     fileInput("ar", "Adjunta Archivo", width = "300px"),
     mainPanel(
-      rHandsontableOutput("file")
+      rHandsontableOutput("file"),
+      conditionalPanel(
+        condition = "output.file",
+        actionButton("firstConf", "Guardar Registros"),
+        sweetalert(selector = "#firstConf", text = "¿Seguro que desea guardar los cambios?", title = "¡Atención!")
+      )
       
     )
   )
@@ -33,7 +39,6 @@ server <- function(input, output) {
     archivo$credito <- as.numeric(gsub(",", "", archivo$credito))
     archivo$debito[!is.na(archivo$credito)] <- -archivo$credito[!is.na(archivo$credito)]
     categoria <- vector(mode = 'character', length = 41)
-    fecha <- seq(from = Sys.Date(), by = "days", length.out = 10)
     #categoria <- factor(LETTERS[41:1],levels =LETTERS[41:1])
     archivo <- data.frame(archivo, categoria)
     ar <- select(archivo, -credito, -saldo, -moneda)
