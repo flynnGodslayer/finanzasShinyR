@@ -19,9 +19,19 @@ ui <- dashboardPage(
       conditionalPanel(
         condition = "output.file",
         actionButton("firstConf", "Guardar Registros"),
-        sweetalert(selector = "#firstConf", text = "¿Seguro que desea guardar los cambios?", title = "¡Atención!")
+        sweetalert(selector = "#firstConf", 
+                   text = "¿Seguro que desea guardar los cambios?", 
+                   title = "¡Atención!", 
+                   showCancelButton = TRUE,
+                   cancelButtonText = 'Atras',
+                   confirmButtonColor = '#39FF14',
+                   confirmButtonText = 'Guardar cambios',
+                   closeOnConfirm = FALSE,
+                   evalFunction = 'function(){
+                                    swal("Cambios guardados exitosamente", "Tus gastos han sido guardados exitosamente", "success")
+                                  }
+        ')
       )
-      
     )
   )
 )
