@@ -93,7 +93,18 @@ body <- dashboardBody(
                   rHandsontableOutput(outputId = "Tabla"), #Muestra la Tabla
                   br(),
                   #Boton para Guardar los Resultados
-                  actionButton(inputId = "Btn_Guardar","Guardar Cambios")
+                  actionButton(inputId = "Btn_Guardar","Guardar Cambios"),
+                  sweetalert(selector = "#Btn_Guardar", 
+                             text = "¿Seguro que desea guardar los cambios?", 
+                             title = "¡Atención!", 
+                             showCancelButton = TRUE,
+                             cancelButtonText = 'Atras',
+                             confirmButtonColor = '#39FF14',
+                             confirmButtonText = 'Guardar cambios',
+                             closeOnConfirm = FALSE,
+                             evalFunction = 'function(){
+                                    swal("Cambios guardados exitosamente", "Tus gastos han sido guardados exitosamente", "success")
+                                  }')
               )
             )
     ),
@@ -153,8 +164,8 @@ server <- function(input, output) {
     }
   })
   #Guarda los cambios en la Tabla, de la ruta que tomamos el arhivo.
-  observeEvent(input$Btn_Guardar,
-               write.csv(hot_to_r(df),file = "TDC.csv", row.names = FALSE))
+  #observeEvent(sweetalert$Guardar Cambios,
+            #write.csv(hot_to_r(df),file = "TDCR.csv", row.names = FALSE))
 }
 
 shinyApp(ui, server)
