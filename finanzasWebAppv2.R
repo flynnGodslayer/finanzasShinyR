@@ -7,7 +7,7 @@ if(length(new.packages) != 0){
 } else if (!is.logical(length(new.packages) != 0 & (new.packages %in% "sweetalertR"))){
   devtools::install_github("timelyportfolio/sweetalertR") 
 }
-
+   
 #lectura de multiples paqueterias
 lapply(list.of.packages, require, character.only = TRUE)
 
