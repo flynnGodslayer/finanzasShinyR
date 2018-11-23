@@ -16,13 +16,16 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       sidebarMenu(
-        menuItem("Automatico", tabName = "dashboard", icon = icon("dashboard")),
-        menuItem("Manual", icon = icon("th"), tabName = "manual",
+        menuItem("Automatico", tabName = "dashboard", icon = icon("dashboard"))
+      ),
+      sidebarMenu(
+        menuItem("Manual", icon = icon("th"), tabName = "manual"),
+        menuItem("Agregar Datos", icon = icon("th"), tabName = "datos",
                  textInput("fecha", label = "Fecha", value = "dd/mm/aa", width = 150),
                  textInput("des", label = "Descripción", value = "Descripción", width = 150),
                  textInput("monto", label = "Monto", value = "Monto", width = 150),
                  textInput("cat", label = "Categoria", value = "Categoria", width = 150),
-                 submitButton("Agregar")
+                 actionButton("Agregar", label = "Agregar")
         )
       )
     )
@@ -33,14 +36,12 @@ ui <- dashboardPage(
               fileInput("ar", "Adjunta Archivo", width = "300px"),
               mainPanel(
                 rHandsontableOutput("file"),
-                actionButton("Atras", label = "Atras", width = "100"),
-                actionButton("Siguiente", label = "Siguiente", width = "100"),
                 actionButton("Guardar", label = "Guardar", width = "100")
               )
       ),
       
-      tabItem(tabName = "manual"
-              #rHandsontableOutput("tabla"),
+      tabItem(tabName = "manual",
+              rHandsontableOutput("tabla")
               
       )
     )
@@ -83,12 +84,23 @@ server <- function(input, output) {
     #searching = TRUE))
   })
   observeEvent(input$Guardar,
-               write.csv(hot_to_r(df),file = "TDCR.csv", row.names = FALSE))
+               write.csv(hot_to_r(df),file = "TDCR.csv", row.names = FALSE)
+  )
+  
+  texten <- eventReactive(input$Agregar,{
+    dato <- data.frame(Fecha = rep(input$fecha), 
+                       Descripcion = rep(input$des),
+                       Monto = rep(input$monto),
+                       Categoria = rep(input$cat))
+    return(dato)
+  })
+  tabladf <- reactive({
+    nd <- rbind.data.frame(texten)
+    rhandsontable(nd, width = 700, stretchH = "all",height = 300, selectCallback = TRUE)
+  })
   
   output$tabla <- renderRHandsontable({
-    observeEvent(
-      
-    )
+    tabladf()                       
   })
 }
 
