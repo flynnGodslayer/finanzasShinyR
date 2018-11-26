@@ -1,4 +1,4 @@
-list.of.packages <- c("shiny", "shinydashboard","DT","tidyverse","dplyr","DBI","RSQLite","rhandsontable","sweetalertR","formattable")
+list.of.packages <- c("shiny", "shinydashboard","shinydashboardPlus","DT","tidyverse","dplyr","DBI","RSQLite","rhandsontable","sweetalertR","formattable")
 
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 
@@ -7,12 +7,15 @@ if(length(new.packages) != 0){
 } else if (!is.logical(length(new.packages) != 0 & (new.packages %in% "sweetalertR"))){
   devtools::install_github("timelyportfolio/sweetalertR") 
 }
-   
+
 #lectura de multiples paqueterias
 lapply(list.of.packages, require, character.only = TRUE)
 
 ui <- dashboardPage(
-  dashboardHeader(),
+  dashboardHeaderPlus(
+    enable_rightsidebar = TRUE,
+    rightSidebarIcon = "gears"
+  ),
   dashboardSidebar(
     sidebarMenu(
       sidebarMenu(
@@ -78,29 +81,24 @@ server <- function(input, output) {
       hot_context_menu(allowRowEdit = TRUE, allowColEdit = TRUE)%>%
       hot_cols(colWidths = 160) %>%
       hot_cols(fixedColumnsLeft = 1)
-    
-    #datatable(ar, selection =list(target = "cell"), editable = TRUE,
-    #options = list(scrollY = '400px', scrollX = TRUE, paging = FALSE, 
-    #searching = TRUE))
   })
-  observeEvent(input$Guardar,
-               write.csv(hot_to_r(df),file = "TDCR.csv", row.names = FALSE)
-  )
   
-  texten <- eventReactive(input$Agregar,{
-    dato <- data.frame(Fecha = rep(input$fecha), 
-                       Descripcion = rep(input$des),
-                       Monto = rep(input$monto),
-                       Categoria = rep(input$cat))
-    return(dato)
-  })
-  tabladf <- reactive({
-    nd <- rbind.data.frame(texten)
-    rhandsontable(nd, width = 700, stretchH = "all",height = 300, selectCallback = TRUE)
+  
+  observeEvent(input$Agregar,{
+    newrow <- data.frame(
+      Fecha = input$fecha,
+      Descripcion = input$des,
+      Debito = input$monto,
+      Categoria = input$cat
+    )
+    write.csv2(newrow, file = "NTDCR")
+    ntab <- read.csv2("NTDCR",skip = 1)
   })
   
   output$tabla <- renderRHandsontable({
-    tabladf()                       
+    ntab <- read.csv2("NTDCR",skip = 1)
+    rhandsontable(ntab, width = 700, stretchH = "all",height = 300, selectCallback = TRUE)
+      
   })
 }
 
